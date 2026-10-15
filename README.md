@@ -1,8 +1,13 @@
 # Unified NES converter
 
+**Source-fidelity repair:** based on
+`21d305d86830451aef735e28f175ed72ffe99f1e`. This revision changes both the
+context selector and original-source checker; it is not a production or
+training-contract approval.
+
 Source-only repository: **[richardopengl-sketch/nes-data-converter](https://github.com/richardopengl-sketch/nes-data-converter)**.
-The user requested publication to this personal GitHub account; repository visibility is
-private. Only the reviewed source, synthetic tests, configuration and documentation are
+The user requested publication to this personal GitHub account; repository visibility was
+verified as public for this update and was not changed by the update. Only the reviewed source, synthetic tests, configuration and documentation are
 included. Real samples and full offline candidate packages remain outside Git.
 Publication does not approve a production/training input contract or further redistribution.
 
@@ -12,9 +17,9 @@ The unified `convert` and `batch` commands require one explicit `--context-mode`
 
 | Context mode | Behavior |
 |---|---|
-| `structured` | Preserve structured context; fail explicitly on the known verified literal/header collision instead of invoking the destructive splitter. |
-| `raw` | Retain the entire canonical context body as opaque source text; no guessed grouping or file associations. |
-| `auto` | Use input-only, bounded syntax evidence to select raw on a complete non-interpolated string-assignment/header collision; otherwise structured. No ID list, filename allowlist or target information. |
+| `structured` | Only an exactly empty context body is supported. Nonempty published text lacks an independently verified grouping contract and fails explicitly. |
+| `raw` | Retain the entire canonical context body as opaque source text; no guessed grouping or file associations. Does not require collision classification. Wrapper collisions fail. |
+| `auto` | Nonempty body (including whitespace) uses raw. Exactly empty body needs no grouping and uses the empty structured representation. No ID list, syntax detector, filename allowlist or target information. |
 
 The unified converter assembles complete offline views using `auto`. Historical
 behavior is separately available through the legacy `render --mode` command:
@@ -38,6 +43,10 @@ contract. Real records and full output packages are intentionally not in this so
 - Optional Python build uses setuptools **84.0.0**. Source-tree usage requires no pip install.
 
 With repository access, clone and run from its root:
+
+The following clone command retrieves the current published main branch. Record
+`git rev-parse HEAD` when reviewing or reproducing a result. Installation instructions
+describe an approved checkout workflow; no installation was executed during this repair.
 
 ```text
 git clone https://github.com/richardopengl-sketch/nes-data-converter.git
@@ -124,16 +133,39 @@ streams, plus byte-preserved membership files. Selection reason, evidence and co
 version are in `AUDIT.jsonl`, separate from the model messages. Input record metadata includes
 the selected context mode and representation contract; none is injected into model messages.
 
-The same member is emitted once per selected view. The 44 content-triggered raw cases replace
-their structured representation, never append new IDs. Both original empty no-edit labels
-are retained. Both views intentionally overlap; do not combine them as disjoint datasets.
+The same member is emitted once per selected view; representation changes never append
+new IDs. Both original empty no-edit labels are retained. Both views intentionally
+overlap; do not combine them as disjoint datasets.
 
-The actual complete delivery has all **2,503 train + 121 validation** and provisional
-**2,449 train + 121 validation**: 2,580 unique structured inputs and 44 unique raw inputs.
-Historical v019 remains a standalone 44-candidate artifact; this is a new unified package.
+The historical complete delivery has all **2,503 train + 121 validation** and provisional
+**2,449 train + 121 validation**, previously 2,580 structured and 44 raw inputs.
+This repair independently verified all 2,624 source records, but **no complete new
+package was generated**: 239 train records contain the raw wrapper's reserved outer
+tags as code literals and are explicitly blocked. Bounded diagnostics rendered
+2,385 records (2,264 train + 121 validation), all raw; these are not a partial
+successful release. The 44 old raw messages remain equal; 2,341 others change only
+the related-context representation. No record was removed from either policy.
 
-Source/target linkage, input isolation, role/membership checks and original patch replay
-must pass. Errors return nonzero and leave no success summary/manifest; a partially written
+The local input-record schema is `local-source-faithful-nes-candidates-v2`; selection
+contract is `nes-source-faithful-context-v2`. Audit fields are separate:
+
+- `baseline_cache_consistency`: accepted/canonical input, patch and after equality.
+- `source_input_fidelity`: original normalized message spans match all canonical inputs.
+- `source_target_linkage`: original assistant region rewrite equals expected after;
+  the patch reaches that independently extracted after.
+- `renderer_target_isolation`: changing the original assistant and rerunning the
+  independent span extractor plus renderer leaves messages unchanged. The native
+  source-adapter-to-renderer path is separately tested on synthetic alternatives,
+  not claimed as rerun for every real record.
+- `patch_replay`: shared original-snapshot patch mechanics reach the verified after.
+
+The independent checker does not call the native adapter, snippet splitter or renderer.
+It uses exact unique source sections and declared region/cursor markers, with only
+CRLF-to-LF normalization. It does not independently prove original IDE provenance or
+the lexical origin of those published markers. Patch application is a shared helper.
+These checks do not certify semantic correctness or absence of all data leakage.
+
+All checks must pass. Errors return nonzero and leave no success summary/manifest; a partially written
 directory is not a successful package. Use a fresh output path after investigating failure.
 Output lengths are recorded; nothing is silently truncated to meet an unverified token budget.
 
@@ -143,7 +175,10 @@ Current code and output coordinates remain excerpt-local; historical coordinates
 their published past-source domains with no inferred offsets. System/output instructions
 are unchanged. In v019, the complete context body after the exact source-task prefix is
 retained, including literal markers. Existing CRLF-to-LF normalization belongs to the native
-adapter, not a new renderer transformation. Wrapper collisions fail explicitly.
+adapter, not a new renderer transformation. Only the leading fixed task prefix is
+removed; repetitions in the body remain. Wrapper collisions fail explicitly even when
+the conflicting tags are source-code literals. No escaping, deletion, alternate
+framing, or legacy structured fallback is applied.
 
 Original grouping, token IDs/chat-template interpretation, token budgets, model behavior
 and production/training readiness are **not** verified by a successful conversion.

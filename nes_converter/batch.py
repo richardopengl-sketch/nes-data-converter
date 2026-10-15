@@ -12,6 +12,7 @@ from .instinct import REVISION
 from .patch import apply_patch
 from .runtime import require
 from .selection import CONTRACT, select_and_render
+from .source_fidelity import alternate_target_input, equal, verify_original
 
 
 def file_hash(path):
@@ -53,15 +54,11 @@ def check_source(canonical, accepted):
     require(source["sample_id"] == sid == accepted["case_id"], f"Source/canonical IDs disagree: {sid}")
     require(source["dataset"] == "continuedev/instinct-data" and source["revision"] == REVISION
             and source["viewer_revision_verified"] is True, f"Source provenance differs: {sid}")
-    require(canonical["input_context"] == accepted["input_context"], f"Canonical input was changed: {sid}")
-    require(canonical["patch"] == accepted["converted_patch"]
-            and canonical["expected_result"] == accepted["expected_result"], f"Source-derived target changed: {sid}")
+    equal(sid, "cache.input_context", accepted["input_context"], canonical["input_context"])
+    equal(sid, "cache.patch", accepted["converted_patch"], canonical["patch"])
+    equal(sid, "cache.expected_result", accepted["expected_result"], canonical["expected_result"])
     require(source["split"] in ("train_typescript", "test_typescript"), f"Unrecognized source split: {sid}")
-    user = [message["content"] for message in source["row"]["messages"] if message["role"] == "user"]
-    require(len(user) == 1, f"Expected one original input message: {sid}")
-    normalized = user[0].replace("\r\n", "\n")
-    require(normalized.startswith(canonical["input_context"]["related_context"]),
-            f"Related context is not from the original input prefix: {sid}")
+    verify_original(canonical, source)
     return source["split"], "validation-only" if source["split"] == "test_typescript" else "train-candidate"
 
 
@@ -108,14 +105,13 @@ def run_batch(*, canonical_path, accepted_path, policies, output, context_mode):
             seen.add(sid)
             split, role = check_source(record, accepted)
             before = copy.deepcopy(record["input_context"])
-            result = select_and_render(record["input_context"], context_mode=context_mode)
+            try:
+                result = select_and_render(record["input_context"], context_mode=context_mode)
+            except ValueError as error:
+                raise ValueError(f"Renderer failure for {sid}: {error}") from error
             require(before == record["input_context"], f"Renderer mutated input: {sid}")
-            # Neither target-bearing record is passed to the selector.
-            modified = {"input_context": copy.deepcopy(before), "patch": "different-target",
-                        "expected_result": {"not_for_renderer": "different"}}
-            removed = {"input_context": copy.deepcopy(before)}
-            require(result == select_and_render(modified["input_context"], context_mode=context_mode)
-                    == select_and_render(removed["input_context"], context_mode=context_mode),
+            alternate = alternate_target_input(accepted["source_before"])
+            require(result == select_and_render(alternate, context_mode=context_mode),
                     f"Target-sensitive rendering: {sid}")
             require(apply_patch(before["files"], record["patch"]) == record["expected_result"],
                     f"Original patch replay mismatch: {sid}")
@@ -124,7 +120,7 @@ def run_batch(*, canonical_path, accepted_path, policies, output, context_mode):
             emitted_views = []
             input_row = {
                 "sample_id": sid, "split": split, "evaluation_role": role,
-                "schema": "local-unified-nes-candidates-v1", "status": "OFFLINE_NES_CANDIDATE",
+                "schema": "local-source-faithful-nes-candidates-v2", "status": "OFFLINE_NES_CANDIDATE",
                 "context_mode": selection["context_mode"], "mapping_contract": selection["representation_contract"],
                 "messages": result["messages"],
             }
@@ -157,7 +153,14 @@ def run_batch(*, canonical_path, accepted_path, policies, output, context_mode):
                 "split": split, "evaluation_role": role, "views": emitted_views, "selection": selection,
                 "source_input_sha256": object_hash(before), "messages_sha256": object_hash(result["messages"]),
                 "label_sha256": object_hash(record["patch"]), "expected_after_sha256": object_hash(record["expected_result"]),
-                "source_linkage_passed": True, "target_isolation_passed": True, "patch_replay_passed": True,
+                "baseline_cache_consistency": {"passed": True, "scope": "Accepted/canonical input, patch and after equality"},
+                "source_input_fidelity": {"passed": True, "scope": "Independent normalized message spans, all input fields"},
+                "source_target_linkage": {"passed": True, "scope": "Original assistant region rewrite and patch reach source-derived after"},
+                "renderer_target_isolation": {
+                    "passed": True,
+                    "scope": "Change original assistant only; independent source extractor -> renderer yields identical messages",
+                    "native_adapter_end_to_end": "Covered separately by synthetic tests, not claimed for this per-record check"},
+                "patch_replay": {"passed": True, "scope": "Original-snapshot patch mechanics against independently linked expected after"},
                 "input_characters": {message["role"]: len(message["content"]) for message in result["messages"]},
                 "token_budget_verified": False, "truncated": False,
             }

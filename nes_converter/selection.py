@@ -2,7 +2,7 @@
 from .prompt import guard, v017, v019
 
 CONTEXT_MODES = ("auto", "structured", "raw")
-CONTRACT = "nes-unified-offline-context-v1"
+CONTRACT = "nes-source-faithful-context-v2"
 
 
 def select_and_render(context: dict, *, context_mode: str) -> dict:
@@ -10,24 +10,32 @@ def select_and_render(context: dict, *, context_mode: str) -> dict:
         raise ValueError(f"Unknown context mode: {context_mode!r}")
     if set(context) != guard.INPUT_FIELDS:
         raise v017.MappingSkip("INPUT_FIELDS_UNSUPPORTED", "Require only the accepted input fields")
-    boundaries = guard.ambiguous_boundaries(context["related_context"])
-    if context_mode == "structured" and boundaries:
-        raise guard.ContextFidelityError(boundaries)
-    raw = context_mode == "raw" or bool(boundaries)
+    prefix = v017.history.prior.SOURCE_PREFIX
+    related = context["related_context"]
+    if not related.startswith(prefix):
+        raise v017.MappingSkip("INPUT_CONTEXT_FRAMING_UNSUPPORTED", "Require the exact source-task prefix")
+    body = related[len(prefix):]
+    if context_mode == "structured" and body:
+        raise v017.MappingSkip(
+            "TRUSTED_CONTEXT_BOUNDARIES_REQUIRED",
+            "Published marker text has no independently verified file/payload boundary contract. "
+            "Use raw/auto; legacy parsing is reproduction only, not a safe fallback.")
+    raw = context_mode == "raw" or bool(body)
     if raw:
         messages = v019.render_raw_context(context)
         representation = v019.CONTRACT
-        reason = "EXPLICIT_RAW_CONTEXT" if context_mode == "raw" else "VERIFIED_CLOSED_LITERAL_HEADER_COLLISION"
+        reason = "EXPLICIT_RAW_CONTEXT" if context_mode == "raw" else "NONEMPTY_CONTEXT_WITHOUT_TRUSTED_BOUNDARIES"
     else:
         messages = v017.render_messages(v017.map_input(context))
         representation = v017.CONTRACT
-        reason = "EXPLICIT_STRUCTURED_CONTEXT" if context_mode == "structured" else "NO_BOUNDED_LITERAL_HEADER_COLLISION"
+        reason = "EMPTY_CONTEXT_NO_GROUPING_REQUIRED"
     return {
         "messages": messages,
         "selection": {
             "requested_mode": context_mode, "context_mode": "raw" if raw else "structured",
             "reason": reason, "representation_contract": representation, "converter_contract": CONTRACT,
-            "boundary_evidence": boundaries, "original_grouping_recovered": False,
-            "scope": "Bounded closed non-interpolated assignment collision check; not a general parser proof",
+            "boundary_evidence": [], "original_grouping_recovered": False,
+            "grouping_contract": "No verified nonempty-context grouping contract is supplied",
+            "scope": "Preserve complete canonical body; empty body alone requires no grouping",
         },
     }

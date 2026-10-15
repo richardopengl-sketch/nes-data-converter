@@ -37,7 +37,12 @@ def batch_fixture(root):
             "source_before": {
                 "sample_id": sid, "dataset": "continuedev/instinct-data", "revision": REVISION,
                 "viewer_revision_verified": True, "split": split,
-                "row": {"messages": [{"role": "user", "content": source["related_context"] + "### User Edits:\n"}]},
+                "row": {"messages": [
+                    {"role": "system", "content": (Path(__file__).parent / "fixtures" / "instinct-system.txt").read_text()},
+                    {"role": "user", "content": source["related_context"] + '### User Edits:\n### User Excerpt:\n"demo.ts"\n\n'
+                     + '<|editable_region_start|>\nlet count = 1;<|user_cursor_is_here|>\n<|editable_region_end|>'},
+                    {"role": "assistant", "content": "let count = 1;"},
+                ]},
             },
         })
         selected.append({
@@ -66,7 +71,7 @@ class UnifiedTests(unittest.TestCase):
         for item in (source, changed_names):
             result = select_and_render(item, context_mode="auto")
             self.assertEqual(result["selection"]["context_mode"], "raw")
-            self.assertEqual(result["selection"]["reason"], "VERIFIED_CLOSED_LITERAL_HEADER_COLLISION")
+            self.assertEqual(result["selection"]["reason"], "NONEMPTY_CONTEXT_WITHOUT_TRUSTED_BOUNDARIES")
             for field in ("sample_id", "expected_result", "patch"):
                 with self.assertRaises(v017.MappingSkip):
                     select_and_render({**item, field: "unused"}, context_mode="auto")
@@ -77,21 +82,23 @@ class UnifiedTests(unittest.TestCase):
         self.assertEqual(result["selection"]["context_mode"], "raw")
 
     def test_closed_literal_and_true_header_counterexamples(self):
-        self.assertEqual(select_and_render(context(), context_mode="auto")["selection"]["context_mode"], "structured")
+        self.assertEqual(select_and_render(context(), context_mode="auto")["selection"]["context_mode"], "raw")
         body = ("<|context_file|> a.ts\n<|snippet|>\nconst a = 1;\n"
                 "<|context_file|> b.ts\n<|snippet|>\nconst b = 2;")
-        self.assertEqual(select_and_render(context(body), context_mode="auto")["selection"]["context_mode"], "structured")
+        self.assertEqual(select_and_render(context(body), context_mode="auto")["selection"]["context_mode"], "raw")
         truncated = ("<|context_file|> a.ts\n<|snippet|>\nconst a = `open\n"
                      "<|context_file|> b.ts\n<|snippet|>\nconst b = 2;")
-        self.assertEqual(select_and_render(context(truncated), context_mode="auto")["selection"]["context_mode"], "structured")
+        self.assertEqual(select_and_render(context(truncated), context_mode="auto")["selection"]["context_mode"], "raw")
 
     def test_explicit_modes_keep_their_requested_semantics(self):
         raw = select_and_render(context(), context_mode="raw")
         self.assertEqual(raw["selection"]["reason"], "EXPLICIT_RAW_CONTEXT")
         self.assertIn(v019.BEGIN, raw["messages"][1]["content"])
-        structured = select_and_render(context(), context_mode="structured")
-        self.assertEqual(structured["selection"]["reason"], "EXPLICIT_STRUCTURED_CONTEXT")
-        with self.assertRaises(guard.ContextFidelityError):
+        empty = context()
+        empty["related_context"] = text.SOURCE_PREFIX
+        structured = select_and_render(empty, context_mode="structured")
+        self.assertEqual(structured["selection"]["reason"], "EMPTY_CONTEXT_NO_GROUPING_REQUIRED")
+        with self.assertRaises(v017.MappingSkip):
             select_and_render(context(collision_body()), context_mode="structured")
 
     def test_unknown_context_and_wrapper_collisions_are_not_swallowed(self):
@@ -116,8 +123,8 @@ class UnifiedTests(unittest.TestCase):
                 policies=policies, output=root / "out", context_mode="auto",
             )
             self.assertEqual(summary["unique_source_records"], 3)
-            self.assertEqual(summary["context_counts"], {"structured": 2, "raw": 1})
-            self.assertEqual(summary["views"]["all"], {"train": 2, "structured": 2, "raw": 1, "validation": 1})
+            self.assertEqual(summary["context_counts"], {"raw": 3})
+            self.assertEqual(summary["views"]["all"], {"train": 2, "raw": 3, "validation": 1})
             self.assertEqual(summary["views"]["provisional"]["train"], 1)
             self.assertEqual(len(summary["no_edit_records"]), 3)
             audit = [json.loads(line) for line in (root / "out" / "AUDIT.jsonl").read_text().splitlines()]
@@ -146,7 +153,8 @@ class UnifiedTests(unittest.TestCase):
                 command.extend(["--" + name, str(path)])
             result = subprocess.run(command, capture_output=True, text=True)
             self.assertEqual(result.returncode, 2)
-            self.assertIn("Source-derived target changed: synthetic:1", result.stderr)
+            self.assertIn("cache.patch", result.stderr)
+            self.assertIn("synthetic:1", result.stderr)
             self.assertFalse((output / "SUMMARY.json").exists())
             self.assertFalse((output / "MANIFEST.json").exists())
 

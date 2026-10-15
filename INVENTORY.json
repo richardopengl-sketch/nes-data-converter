@@ -1,5 +1,6 @@
 {
-  "scope": "Published source-only payload; excludes this self-referential inventory file",
+  "scope": "Source-only repaired publication; excludes this self-referential inventory",
+  "baseline_commit": "21d305d86830451aef735e28f175ed72ffe99f1e",
   "files": {
     ".gitattributes": {
       "bytes": 127,
@@ -9,9 +10,17 @@
       "bytes": 973,
       "sha256": "16e60c2b32a46662446524489fefe6295345ef05b824533d499e28be9c9bb6f8"
     },
+    "README.md": {
+      "bytes": 11525,
+      "sha256": "4780c5bda944df5617dd19552225056bb7f30db6748ae80eff119c19744c4152"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "bytes": 1209,
+      "sha256": "a2665fdc51ae64dcc277eb1a2debf8ac2282a6780321357caf6a56364a4c749b"
+    },
     "docs/HANDOFF.md": {
-      "bytes": 4792,
-      "sha256": "87bc020c7288abb5a9b7cfa6f594da3ddd343ae0b5b3a448e355c08232ef78aa"
+      "bytes": 6551,
+      "sha256": "621a1f55aee8992dc4239030c09fd0733c511b8a1a84435623b36a6af2ac133b"
     },
     "nes_converter/__init__.py": {
       "bytes": 100,
@@ -26,8 +35,8 @@
       "sha256": "7cc266d3885baab275374cc264c72a8bd91181ae24b8b34c58adf39f6679af81"
     },
     "nes_converter/batch.py": {
-      "bytes": 10902,
-      "sha256": "f75d40001a2b2981a7af2ed84c66963be972b1f6ae211c1f895be499fad3fdee"
+      "bytes": 11199,
+      "sha256": "adac827b014bc2ff55b5fecc0470e7fcc0aeda369d24a2ef765755830e6a8e8d"
     },
     "nes_converter/errors.py": {
       "bytes": 631,
@@ -78,8 +87,12 @@
       "sha256": "0cfac68a056396c929ba93f4ccde8a2f1a969130c07eebe882b7355848042f07"
     },
     "nes_converter/selection.py": {
-      "bytes": 1689,
-      "sha256": "e6fb07df71c8f21c1200e825fa11783a6124bf3355ba3404f07bd842342264ba"
+      "bytes": 2095,
+      "sha256": "08a9568518409d33abf6eb1b67e1bb5519538aae0fad045f7bd874177de9c6bf"
+    },
+    "nes_converter/source_fidelity.py": {
+      "bytes": 7476,
+      "sha256": "31faaef142aa032edc9934219daa6068f6d1fc11d724576222d77211749be34e"
     },
     "nes_converter/source_text.py": {
       "bytes": 1022,
@@ -113,10 +126,6 @@
       "bytes": 532,
       "sha256": "5abc37a4c190345caa758069259225f25d7b984b92b7d34c5d9ac1789abdcbf0"
     },
-    "README.md": {
-      "bytes": 9165,
-      "sha256": "26cb99d476c0c58feb2a3fc50c20ed216ab36656febc5726e70cec0dc27059f1"
-    },
     "tests/fixtures/instinct-system.txt": {
       "bytes": 3440,
       "sha256": "8e00cd4a314c79940f969da8b838be4345d18d90d04fa3586cc83badf44e58ec"
@@ -125,9 +134,13 @@
       "bytes": 12066,
       "sha256": "eae571f384a1117cb83b50ec2ecd2dcf862d4131d9e5ebb27d72dcc9103e99d0"
     },
+    "tests/test_source_fidelity.py": {
+      "bytes": 11954,
+      "sha256": "16a24cbdfedea8848f58f95637357c86ff341de6cab340966fccf0edf0a3d7e3"
+    },
     "tests/test_unified.py": {
-      "bytes": 9394,
-      "sha256": "7650fa4f3efcdd8957d99f281367b9f4f250f6457b332627bd6a912b3d38fedf"
+      "bytes": 9823,
+      "sha256": "bf69b85c47bd0a41237bd4249b91d428797910383f79e6cac3c6e6bd1e91408a"
     },
     "third_party/INSTINCT_LICENSE.txt": {
       "bytes": 11348,
@@ -136,11 +149,6 @@
     "third_party/VS_CODE_LICENSE.txt": {
       "bytes": 1088,
       "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9"
-    },
-    "THIRD_PARTY_NOTICES.md": {
-      "bytes": 1209,
-      "sha256": "a2665fdc51ae64dcc277eb1a2debf8ac2282a6780321357caf6a56364a4c749b"
     }
-  },
-  "third_party_scan_scope": "Bundled text; no secrets or original/bulk data intended"
+  }
 }
