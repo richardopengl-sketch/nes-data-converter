@@ -1,0 +1,146 @@
+{
+  "scope": "Published source-only payload; excludes this self-referential inventory file",
+  "files": {
+    ".gitattributes": {
+      "bytes": 127,
+      "sha256": "69186970f03d822e5fd92a293d481b0c790b8f73406efdb7eb8852426c451325"
+    },
+    ".gitignore": {
+      "bytes": 973,
+      "sha256": "16e60c2b32a46662446524489fefe6295345ef05b824533d499e28be9c9bb6f8"
+    },
+    "docs/HANDOFF.md": {
+      "bytes": 4792,
+      "sha256": "87bc020c7288abb5a9b7cfa6f594da3ddd343ae0b5b3a448e355c08232ef78aa"
+    },
+    "nes_converter/__init__.py": {
+      "bytes": 100,
+      "sha256": "5d3f86a25c711874bd9354d0b75b0d70c154ea8c77fe11a90860d0f1a9dd0339"
+    },
+    "nes_converter/__main__.py": {
+      "bytes": 4127,
+      "sha256": "6edd4073a623705a3216e899e35226244db30694210a7617a9fdb1fc2e4d507e"
+    },
+    "nes_converter/api.py": {
+      "bytes": 729,
+      "sha256": "7cc266d3885baab275374cc264c72a8bd91181ae24b8b34c58adf39f6679af81"
+    },
+    "nes_converter/batch.py": {
+      "bytes": 10902,
+      "sha256": "f75d40001a2b2981a7af2ed84c66963be972b1f6ae211c1f895be499fad3fdee"
+    },
+    "nes_converter/errors.py": {
+      "bytes": 631,
+      "sha256": "cd677794b7305fd5bd8861619923ab44964be67328c49200f1be9665c062977a"
+    },
+    "nes_converter/instinct.py": {
+      "bytes": 5803,
+      "sha256": "fe53370e75dd85fb57994403271006dbb40922ecc55816db6370e289a9036b32"
+    },
+    "nes_converter/patch.py": {
+      "bytes": 4045,
+      "sha256": "277fca622fbdcab63029376f9144e0c8bac4b05a102ed2b8a9b78c61e071592e"
+    },
+    "nes_converter/prompt/__init__.py": {
+      "bytes": 84,
+      "sha256": "5e5ddd3e1266468dfec6a90ea61fc41e534ae27977449f319198c51fb22d8a19"
+    },
+    "nes_converter/prompt/guard.py": {
+      "bytes": 3710,
+      "sha256": "20f0d0d29040476977b0d2a401590e468d9b6fc4dc1d21f0114d5217421c28b2"
+    },
+    "nes_converter/prompt/history.py": {
+      "bytes": 5075,
+      "sha256": "24e878c6c1c0cbba5c2974ca9ff3bdeaff5c8a481a805395b1fa6588ccf2dbbb"
+    },
+    "nes_converter/prompt/template.json": {
+      "bytes": 5229,
+      "sha256": "705798521805c47bd77dd77c46d76033fce506ea4c9cd5d9a78034915c65b14b"
+    },
+    "nes_converter/prompt/text.py": {
+      "bytes": 7063,
+      "sha256": "61037a6960cdfe6a21b80a3dde414a24737f06ae7681ee8131a62d0c69bc7fea"
+    },
+    "nes_converter/prompt/v017.py": {
+      "bytes": 6151,
+      "sha256": "a750f875604f717aa5ffbc42e8cce0c7c446a3e65eb876787f7b241bb794c91d"
+    },
+    "nes_converter/prompt/v019.py": {
+      "bytes": 2688,
+      "sha256": "c45fe5c0a5402501bf0de4e7129f5a668af6028b8174ad414875a00e4c31699d"
+    },
+    "nes_converter/runtime.py": {
+      "bytes": 851,
+      "sha256": "3ef3688c055de2c7acb7dbf19a40e7bf446b9d489180e38fefbabf7d8a06d6a2"
+    },
+    "nes_converter/schema.py": {
+      "bytes": 143,
+      "sha256": "0cfac68a056396c929ba93f4ccde8a2f1a969130c07eebe882b7355848042f07"
+    },
+    "nes_converter/selection.py": {
+      "bytes": 1689,
+      "sha256": "e6fb07df71c8f21c1200e825fa11783a6124bf3355ba3404f07bd842342264ba"
+    },
+    "nes_converter/source_text.py": {
+      "bytes": 1022,
+      "sha256": "3c176ff8ddd8c06b529a148e15640c0fc36e3011c0c62883abf9121176f7562a"
+    },
+    "nes_converter/validation/__init__.py": {
+      "bytes": 42,
+      "sha256": "b7adada2b925a3bfc0c978af1672d0bf38b777853870a2dfc6940e47fa98c3ba"
+    },
+    "nes_converter/validation/inspect_quotes.cjs": {
+      "bytes": 1260,
+      "sha256": "d5635b52e688ee964451823d6cc33eafa0fa9dc5d7de48051ed6260c4df3473b"
+    },
+    "nes_converter/validation/instinct_lexical.cjs": {
+      "bytes": 3735,
+      "sha256": "636ffb0468a6fd96d31b30445e60d10972c102bff1d48ad54785bf200bf13704"
+    },
+    "nes_converter/validation/instinct_lexical.py": {
+      "bytes": 626,
+      "sha256": "df9374f45659f0fb906a723d98dfed1911cc21c2fb4eb5c9eb3575bb64c6325e"
+    },
+    "package-lock.json": {
+      "bytes": 636,
+      "sha256": "e851c69983eaa3bf33eb382b2a0413940c1bc27408f6e4c4ab5202683c3c5316"
+    },
+    "package.json": {
+      "bytes": 255,
+      "sha256": "0d419e9781abc078d0d68d7f370d5fd667831a017b3f929efaf8927bfa4efbe6"
+    },
+    "pyproject.toml": {
+      "bytes": 532,
+      "sha256": "5abc37a4c190345caa758069259225f25d7b984b92b7d34c5d9ac1789abdcbf0"
+    },
+    "README.md": {
+      "bytes": 9165,
+      "sha256": "26cb99d476c0c58feb2a3fc50c20ed216ab36656febc5726e70cec0dc27059f1"
+    },
+    "tests/fixtures/instinct-system.txt": {
+      "bytes": 3440,
+      "sha256": "8e00cd4a314c79940f969da8b838be4345d18d90d04fa3586cc83badf44e58ec"
+    },
+    "tests/test_handoff.py": {
+      "bytes": 12066,
+      "sha256": "eae571f384a1117cb83b50ec2ecd2dcf862d4131d9e5ebb27d72dcc9103e99d0"
+    },
+    "tests/test_unified.py": {
+      "bytes": 9394,
+      "sha256": "7650fa4f3efcdd8957d99f281367b9f4f250f6457b332627bd6a912b3d38fedf"
+    },
+    "third_party/INSTINCT_LICENSE.txt": {
+      "bytes": 11348,
+      "sha256": "f1dc40c2abe30e95fb459a9316cd4250d81d75487eaa7101c9c8ab82fbc4d406"
+    },
+    "third_party/VS_CODE_LICENSE.txt": {
+      "bytes": 1088,
+      "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9"
+    },
+    "THIRD_PARTY_NOTICES.md": {
+      "bytes": 1209,
+      "sha256": "a2665fdc51ae64dcc277eb1a2debf8ac2282a6780321357caf6a56364a4c749b"
+    }
+  },
+  "third_party_scan_scope": "Bundled text; no secrets or original/bulk data intended"
+}

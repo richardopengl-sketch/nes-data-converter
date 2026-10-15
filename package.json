@@ -1,0 +1,8 @@
+{
+  "name": "nes-data-converter-validation",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Pinned TypeScript parser for offline lexical checks; no dataset execution",
+  "engines": {"node": ">=18"},
+  "dependencies": {"typescript": "5.9.3"}
+}

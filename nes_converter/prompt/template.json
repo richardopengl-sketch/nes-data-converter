@@ -1,0 +1,124 @@
+{
+  "system": "Predict the next code edit based on user context, following Microsoft content policies and avoiding copyright violations. If a request may breach guidelines, reply: \"Sorry, I can't assist with that.\"",
+  "postscript": "\n\nThe developer was working on a section of code within the `current_file_content` - carefully note their `cursor_location` marked with `<|cursor|>`. Using the given `recently_viewed_code_snippets`, `current_file_content`, `edit_diff_history`, and `cursor_location`, please continue the developer's work. Output a modified diff format with a sequence of intuitive next changes, where each patch must start with `<filename>:<line number>`. Order changes by priority and flow; for instance, edits adjacent to the user's cursor should always be prioritized, followed by lines near the cursor, followed by lines farther away. If there are no good edit candidates, output the empty string \"\". Avoid undoing or reverting the developer's last change unless there are obvious typos or errors. Adhere meticulously to the diff format.",
+  "profile": {
+    "promptingStrategy": "patchBased02Unified",
+    "includeLineNumbers": "withoutSpace",
+    "includePostScript": true,
+    "includeTagsInCurrentFile": false,
+    "contextPolicy": "all published snippets; source order; excerpt-local; no additional clipping",
+    "historyPolicy": "published newest-first reversed; changed-line hunks; zero-based historical coordinates",
+    "budgetSelectionTested": false,
+    "capturedDeploymentConfigurationConfirmed": false
+  },
+  "components": [
+    {
+      "file": "tags.ts",
+      "marker": "export namespace PromptTags {",
+      "line": 6,
+      "sha256": "32f72d88f74efc2432e6129536a1bec35373064d8a4765770b7564c92b4ee9cf"
+    },
+    {
+      "file": "xtabPromptOptions.ts",
+      "marker": "export enum IncludeLineNumbersOption {",
+      "line": 11,
+      "sha256": "bc1dd83f8232e1a0384ebf538d26bfd272d83c5ea5a090c8dd2c47c73b0639e5"
+    },
+    {
+      "file": "xtabPromptOptions.ts",
+      "marker": "export enum PromptingStrategy {",
+      "line": 520,
+      "sha256": "d9c998f3ae789ef01913b2018e975b79a5918afcaa9410821b6ccb7bb0fda659"
+    },
+    {
+      "file": "xtabPromptOptions.ts",
+      "marker": "export enum AggressivenessLevel {",
+      "line": 376,
+      "sha256": "903865da7f70a8534046769dd582b99e197093f555d3a13d197bb38e3b4dfdc3"
+    },
+    {
+      "file": "xtabPromptOptions.ts",
+      "marker": "export enum RejectedEditsMemoryMode {",
+      "line": 93,
+      "sha256": "fd904b18d555183e040bba9408f599f55beed73aa44755c81263ebd40239723b"
+    },
+    {
+      "file": "xtabPromptOptions.ts",
+      "marker": "export function isRejectedEditMemoryEnabled(",
+      "line": 591,
+      "sha256": "6f3f20b20069714c3635ae132328b2b219b781d833498d9d7960cda7588438d2"
+    },
+    {
+      "file": "promptCraftingUtils.ts",
+      "marker": "export function toUniquePath(",
+      "line": 10,
+      "sha256": "789953404208ddc3f2513fa01af313486a1b92b3c65060833f24c1497425119f"
+    },
+    {
+      "file": "promptCraftingUtils.ts",
+      "marker": "function normalizeWindowsDriveLetter(",
+      "line": 24,
+      "sha256": "2dbeb4de1a7f135183dd0c5b05aa3eeb41046635c59ec7d7a4306ae3d2fc8b6c"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "export function getUserPrompt(",
+      "line": 68,
+      "sha256": "ba36bdfb9aff4e64bdc2ea7b4aa21421e19396e930b7eb587bbf49502ec25e39"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "function wrapInBackticks(",
+      "line": 348,
+      "sha256": "060dc78c78ca67d57e594e98045d4fba8c9b8045fbca3f407ed3cd34dfdd9e13"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "function addRelatedInformation(",
+      "line": 352,
+      "sha256": "3e0837d1e3e8f18a0bb0fcc0955b3dafb30253a8ba4c5778a0891aef979f8afd"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "function appendWithNewLineIfNeeded(",
+      "line": 359,
+      "sha256": "318a68b79b3f6443bd6f64755a22ace01b5e35a470636fbc008eec5d3e2a7d50"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "function getPostScript(",
+      "line": 374,
+      "sha256": "7dd3c19cf70a1deb565d927513a112864f707d83f937d64099e5496dfbe1cda8"
+    },
+    {
+      "file": "promptCrafting.ts",
+      "marker": "function getRelatedInformation(",
+      "line": 439,
+      "sha256": "c4a1558ed46314455275f2adff7eb8d04c50405ee2defc2b14a2bb6e5661f195"
+    },
+    {
+      "file": "recentFilesForPrompt.ts",
+      "marker": "function formatLinesWithLineNumbers(",
+      "line": 91,
+      "sha256": "df83ad3a93836d910e66e71ff5661d750b28af66fcbe81de307ec80b3e12645a"
+    },
+    {
+      "file": "recentFilesForPrompt.ts",
+      "marker": "function formatCodeSnippet(",
+      "line": 108,
+      "sha256": "b441a6f9d440d6d1fe4d3a31ff57dd2f37e131ed54563f9143a4afbfe70db4de"
+    },
+    {
+      "file": "diffHistoryForPrompt.ts",
+      "marker": "function generateDocDiff(",
+      "line": 134,
+      "sha256": "79294311dfce7fdfdaa5a272ad8a10956f35b6c9d2e59a3439dabfcdccbe27e9"
+    },
+    {
+      "file": "xtabProvider.ts",
+      "marker": "export function pickSystemPrompt(",
+      "line": 1817,
+      "sha256": "5c4f839e1ecd8e458d4bba15dc46ef0ecadbc62c26b034cb9aafa72b145af990"
+    }
+  ]
+}
