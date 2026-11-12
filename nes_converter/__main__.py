@@ -20,7 +20,7 @@ def main():
     native = commands.add_parser("adapt", help="Adapt one pinned Instinct source record without model rendering")
     native.add_argument("--input", type=Path, required=True)
     native.add_argument("--output", type=Path, required=True)
-    unified = commands.add_parser("convert", help="Render one input using explicit structured/raw/auto context selection")
+    unified = commands.add_parser("convert", help="Render one input using an explicit normal or experimental context mode")
     unified.add_argument("--context-mode", choices=CONTEXT_MODES, required=True)
     unified.add_argument("--input", type=Path, required=True)
     unified.add_argument("--output", type=Path, required=True)

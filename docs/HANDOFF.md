@@ -1,5 +1,26 @@
 # GitHub source handoff
 
+## Source-only JSON-context update - 2026-11-12
+
+This source copy adds `nes-related-context-json-v1` as an explicit opt-in mode.
+It does not change existing modes. The previous publication and raw-mode repair notes below
+describe the baseline, not the new experiment's output status.
+
+The experiment independently read all 5,194 exported input rows for the unchanged
+all/provisional views. All 2,624 unique records and all 239 previously blocked
+contexts passed. The final model-visible messages retain the encoded JSON context;
+decoding that inner string is audit-only. Both labels and expected-after streams,
+roles, no-edits and membership policies are unchanged. See the accompanying local
+experiment report for exact character/byte changes, test evidence and model limits.
+No tokenizer/model was run, and no production/training contract is approved.
+
+The source and added synthetic tests were taken from the preserved isolated
+JSON experiment, not the older package at the local converter root. Its saved
+receipt records 44 passing tests, 2,624 unique source records and 5,194 exported
+readback rows across overlapping views. This upload did not rerun those tests
+or regenerate any data. The driver, raw records, complete prompts, outputs,
+per-record metrics and local evidence logs are not included.
+
 ## Source-fidelity repair and publication
 
 This source tree contains the isolated repair of published commit
@@ -91,7 +112,7 @@ and further distribution require separate decisions.
 ## Complete offline output, separate from Git
 
 The historical package used 2,624 accepted records, with 2,580 structured contexts and
-44 raw contexts. This revision verified full original-source linkage for all 2,624,
+44 raw contexts. The preceding raw-mode repair verified full original-source linkage for all 2,624,
 but did not produce a complete replacement package: 239 train records contain raw
 wrapper delimiters literally and are blocked. The other 2,385 records were rendered
 and compared as diagnostics only, not as a reduced release. Both all/provisional

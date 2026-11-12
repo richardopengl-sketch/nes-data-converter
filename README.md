@@ -1,5 +1,43 @@
 # Unified NES converter
 
+## Opt-in JSON-context experiment
+
+This source extends the pinned repair with **explicit**
+`--context-mode nes-related-context-json-v1`.
+Existing `auto`, `raw`, `structured`, and legacy behavior is unchanged, and there
+is still no implicit mode. In particular, current auto still rejects its 239
+wrapper-collision cases; it does not silently switch to JSON.
+
+The experimental mode retains the complete canonical context as a single-line
+JSON string using declared escapes. The model-visible User contains that encoded
+text. Reading the exported JSONL once yields the final System/User messages;
+**do not decode the inner context before passing those messages to a model**.
+Inner decoding is a separate audit operation, not model preprocessing.
+
+The full local experiment verified 2,624 unique records, including all 239 prior
+collisions, with zero failures/skips. Both existing views are retained:
+all 2,503 train + 121 validation; provisional 2,449 train + 121 validation.
+All 5,194 exported input rows were read back and audited with one inner JSON parse
+against independently extracted source context. Labels, after snapshots and
+membership files remain byte-identical. This is not production/training approval.
+
+The environment-specific experiment driver and its data are deliberately not
+included in this source-only repository. Direct `batch` in this mode
+emits `EXPERIMENTAL_CONVERSION_COMPLETE_READBACK_PENDING`, not a verified package.
+Use `nes_converter.json_readback.verify_visible_messages` with an independently
+source-checked context and the pre-export message hash to audit exported messages.
+See the synthetic examples in [test_json_readback.py](tests/test_json_readback.py).
+This checker never calls the encoder to create expected text.
+It keeps transport-message identity separate from decoded source-body fidelity.
+Detailed evidence and the final model-visible example are outside this source-only
+directory in the retained local experiment delivery.
+
+The 2026-11-12 update publishes the preserved opt-in source and synthetic tests.
+The existing local receipt records 44 passing tests and 5,194 readback rows;
+these are historical results, **not tests rerun for this upload**. This update
+did not start WSL, install dependencies, regenerate data, call a model or run
+training/benchmarks.
+
 **Source-fidelity repair:** based on
 `21d305d86830451aef735e28f175ed72ffe99f1e`. This revision changes both the
 context selector and original-source checker; it is not a production or
@@ -20,6 +58,7 @@ The unified `convert` and `batch` commands require one explicit `--context-mode`
 | `structured` | Only an exactly empty context body is supported. Nonempty published text lacks an independently verified grouping contract and fails explicitly. |
 | `raw` | Retain the entire canonical context body as opaque source text; no guessed grouping or file associations. Does not require collision classification. Wrapper collisions fail. |
 | `auto` | Nonempty body (including whitespace) uses raw. Exactly empty body needs no grouping and uses the empty structured representation. No ID list, syntax detector, filename allowlist or target information. |
+| `nes-related-context-json-v1` | Explicit experimental mode. Entire canonical body becomes a reversible JSON string; no inferred groups. Requires separate exported-JSONL readback validation. |
 
 The unified converter assembles complete offline views using `auto`. Historical
 behavior is separately available through the legacy `render --mode` command:
@@ -44,7 +83,8 @@ contract. Real records and full output packages are intentionally not in this so
 
 With repository access, clone and run from its root:
 
-The following clone command retrieves the current published main branch. Record
+The following clone command retrieves the current published branch, including
+the explicit opt-in extension after this update. Record
 `git rev-parse HEAD` when reviewing or reproducing a result. Installation instructions
 describe an approved checkout workflow; no installation was executed during this repair.
 
@@ -139,7 +179,7 @@ overlap; do not combine them as disjoint datasets.
 
 The historical complete delivery has all **2,503 train + 121 validation** and provisional
 **2,449 train + 121 validation**, previously 2,580 structured and 44 raw inputs.
-This repair independently verified all 2,624 source records, but **no complete new
+The preceding raw-mode repair independently verified all 2,624 source records, but **no complete new
 package was generated**: 239 train records contain the raw wrapper's reserved outer
 tags as code literals and are explicitly blocked. Bounded diagnostics rendered
 2,385 records (2,264 train + 121 validation), all raw; these are not a partial

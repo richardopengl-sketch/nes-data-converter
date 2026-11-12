@@ -11,7 +11,8 @@ from pathlib import Path
 from .instinct import REVISION
 from .patch import apply_patch
 from .runtime import require
-from .selection import CONTRACT, select_and_render
+from .prompt.json_context import CONTRACT as JSON_CONTEXT_CONTRACT
+from .selection import CONTRACT, EXPERIMENT_CONTRACT, select_and_render
 from .source_fidelity import alternate_target_input, equal, verify_original
 
 
@@ -124,6 +125,8 @@ def run_batch(*, canonical_path, accepted_path, policies, output, context_mode):
                 "context_mode": selection["context_mode"], "mapping_contract": selection["representation_contract"],
                 "messages": result["messages"],
             }
+            if context_mode == JSON_CONTEXT_CONTRACT:
+                input_row["status"] = "EXPERIMENTAL_OFFLINE_NES_CANDIDATE"
             for name, policy in loaded.items():
                 require(sid in policy["selected"] or sid in policy["excluded"],
                         f"Policy {name} does not classify existing source ID: {sid}")
@@ -181,6 +184,11 @@ def run_batch(*, canonical_path, accepted_path, policies, output, context_mode):
         "failures": 0, "skips": 0, "original_grouping_recovered": False,
         "production_contract_approved": False, "training_ready": False, "model_or_tokenizer_loaded": False,
     }
+    if context_mode == JSON_CONTEXT_CONTRACT:
+        summary.update(
+            status="EXPERIMENTAL_CONVERSION_COMPLETE_READBACK_PENDING",
+            converter_contract=EXPERIMENT_CONTRACT, readback_verified=False,
+        )
     (output / "SUMMARY.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     inventory = {
         file.relative_to(output).as_posix(): {"bytes": file.stat().st_size, "sha256": file_hash(file)}

@@ -1,8 +1,9 @@
 """Unified modes use only input content; no sample IDs, policies, or targets."""
-from .prompt import guard, v017, v019
+from .prompt import guard, json_context, v017, v019
 
-CONTEXT_MODES = ("auto", "structured", "raw")
+CONTEXT_MODES = ("auto", "structured", "raw", json_context.CONTRACT)
 CONTRACT = "nes-source-faithful-context-v2"
+EXPERIMENT_CONTRACT = "nes-json-context-offline-experiment-v1"
 
 
 def select_and_render(context: dict, *, context_mode: str) -> dict:
@@ -10,6 +11,20 @@ def select_and_render(context: dict, *, context_mode: str) -> dict:
         raise ValueError(f"Unknown context mode: {context_mode!r}")
     if set(context) != guard.INPUT_FIELDS:
         raise v017.MappingSkip("INPUT_FIELDS_UNSUPPORTED", "Require only the accepted input fields")
+    if context_mode == json_context.CONTRACT:
+        result = json_context.render_proposal(context)
+        return {
+            "messages": result["messages"],
+            "selection": {
+                "requested_mode": context_mode, "context_mode": context_mode,
+                "reason": "EXPLICIT_OPT_IN_JSON_CONTEXT_EXPERIMENT",
+                "representation_contract": json_context.CONTRACT,
+                "converter_contract": EXPERIMENT_CONTRACT,
+                "boundary_evidence": [], "original_grouping_recovered": False,
+                "experimental": True, "production_contract_approved": False,
+                "scope": "Versioned JSON string of the full canonical body, not restored source groups",
+            },
+        }
     prefix = v017.history.prior.SOURCE_PREFIX
     related = context["related_context"]
     if not related.startswith(prefix):
